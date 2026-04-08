@@ -32,7 +32,7 @@ export function LocationCards({
     <>
           {/* Selected Sight Card */}
           {selectedSight ? (
-            <Card className='w-full max-w-[24rem] rounded-[2rem] overflow-hidden shadow-2xl bg-white border-none ring-1 ring-black/5 animate-in slide-in-from-bottom-8 duration-300'>
+            <Card className='w-full max-w-[24rem] mx-auto rounded-[2rem] overflow-hidden shadow-2xl bg-white border-none ring-1 ring-black/5 animate-in slide-in-from-bottom-8 duration-300'>
               <div className='relative h-40 sm:h-48 w-full group'>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -142,7 +142,7 @@ export function LocationCards({
               </div>
             </Card>
           ) : selectedShop ? (
-            <Card className='w-full max-w-[24rem] rounded-[2rem] overflow-hidden shadow-2xl bg-white border-none ring-1 ring-black/5 animate-in slide-in-from-bottom-8 duration-300'>
+            <Card className='w-full max-w-[24rem] mx-auto rounded-[2rem] overflow-hidden shadow-2xl bg-white border-none ring-1 ring-black/5 animate-in slide-in-from-bottom-8 duration-300'>
               {selectedShop.image ? (
                 <div className='relative h-40 sm:h-48 w-full group'>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -249,7 +249,7 @@ export function LocationCards({
               </div>
             </Card>
           ) : selectedHome ? (
-            <Card className='pointer-events-auto w-full max-w-[24rem] rounded-[2rem] overflow-hidden shadow-2xl bg-white border-none ring-1 ring-black/5 animate-in slide-in-from-bottom-8 duration-300'>
+            <Card className='pointer-events-auto w-full max-w-[24rem] mx-auto rounded-[2rem] overflow-hidden shadow-2xl bg-white border-none ring-1 ring-black/5 animate-in slide-in-from-bottom-8 duration-300'>
               <div className='p-6 flex flex-col'>
                 <div className='flex items-start justify-between mb-1'>
                   <div className='flex items-center gap-3'>

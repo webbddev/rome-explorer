@@ -156,7 +156,7 @@ export default function Home() {
       >
         <MapControls
           showZoom
-          showLocate
+          showLocate={false}
           show3D
           showFullscreen
           position='bottom-right'
@@ -396,12 +396,6 @@ export default function Home() {
       <SearchOverlay
         gpsLocation={gpsLocation}
         onResultClick={handleSearchResultClick}
-        pinMode={pinMode}
-        setPinMode={setPinMode}
-        isLocating={isLocating}
-        handleLocate={handleLocate}
-        hasAnyPin={hasAnyPin}
-        handleClearRoute={handleClearRoute}
         gpsError={gpsError}
       />
 
@@ -445,6 +439,72 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* ── Bottom-Right: Route Controls (above map buttons) ── */}
+      <div className='absolute bottom-52 right-2 z-20 flex flex-col gap-1.5 pointer-events-auto items-end'>
+        <button
+          onClick={() => setPinMode(pinMode === 'setA' ? 'idle' : 'setA')}
+          className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-[11px] font-bold transition-all shadow-lg ${
+            pinMode === 'setA'
+              ? 'bg-orange-500 text-white shadow-orange-500/30 scale-105'
+              : 'bg-white/95 backdrop-blur-md text-orange-600 hover:bg-orange-50'
+          }`}
+        >
+          <div
+            className={`size-4 rounded-full flex items-center justify-center text-[9px] font-black border-2 ${
+              pinMode === 'setA'
+                ? 'bg-white text-orange-500 border-white'
+                : 'bg-orange-500 text-white border-orange-400'
+            }`}
+          >
+            A
+          </div>
+          Set Start
+        </button>
+
+        <button
+          onClick={() => setPinMode(pinMode === 'setB' ? 'idle' : 'setB')}
+          className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-[11px] font-bold transition-all shadow-lg ${
+            pinMode === 'setB'
+              ? 'bg-blue-600 text-white shadow-blue-600/30 scale-105'
+              : 'bg-white/95 backdrop-blur-md text-blue-600 hover:bg-blue-50'
+          }`}
+        >
+          <div
+            className={`size-4 rounded-full flex items-center justify-center text-[9px] font-black border-2 ${
+              pinMode === 'setB'
+                ? 'bg-white text-blue-600 border-white'
+                : 'bg-blue-600 text-white border-blue-500'
+            }`}
+          >
+            B
+          </div>
+          Set End
+        </button>
+
+        <button
+          onClick={handleLocate}
+          disabled={isLocating}
+          className='flex items-center gap-1.5 px-3 py-2 rounded-full text-[11px] font-bold bg-white/95 backdrop-blur-md text-slate-600 shadow-lg hover:bg-slate-50 transition-all disabled:opacity-50'
+        >
+          {isLocating ? (
+            <Loader2 className='size-3.5 animate-spin' />
+          ) : (
+            <Navigation2 className='size-3.5' />
+          )}
+          Locate
+        </button>
+
+        {hasAnyPin && (
+          <button
+            onClick={handleClearRoute}
+            className='flex items-center gap-1 px-3 py-2 rounded-full text-[11px] font-bold bg-white/95 border border-red-200 text-red-500 shadow-lg hover:bg-red-50 transition-all animate-in fade-in zoom-in-95 duration-200'
+          >
+            <X className='size-3' />
+            Clear
+          </button>
+        )}
+      </div>
 
       {/* ── BOTTOM REGION ── */}
       <div className='pointer-events-none absolute inset-x-0 bottom-0 z-20 flex flex-col items-center pb-6'>
@@ -494,7 +554,7 @@ export default function Home() {
           </div>
         )}
 
-        <div className='pointer-events-auto w-full flex-none px-4 sm:px-8'>
+        <div className='pointer-events-auto w-full flex-none px-4 sm:px-8 flex justify-center'>
           <LocationCards
             selectedSight={selectedSight}
             setSelectedSight={setSelectedSight}
