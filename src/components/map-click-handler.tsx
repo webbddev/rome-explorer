@@ -7,15 +7,16 @@ import { useMap } from "@/components/ui/map";
 interface MapClickHandlerProps {
   enabled: boolean;
   onMapClick: (lngLat: { lng: number; lat: number }) => void;
+  cursor?: string;
 }
 
 /**
  * Invisible component that listens for clicks on the map surface.
  * Must be rendered as a child of <Map>.
- * When `enabled` is true, the cursor changes to a crosshair and
- * clicks fire `onMapClick` with the geographic coordinates.
+ * When `enabled` is true, the clicks fire `onMapClick` 
+ * with the geographic coordinates.
  */
-export function MapClickHandler({ enabled, onMapClick }: MapClickHandlerProps) {
+export function MapClickHandler({ enabled, onMapClick, cursor = "crosshair" }: MapClickHandlerProps) {
   const { map, isLoaded } = useMap();
 
   useEffect(() => {
@@ -23,7 +24,7 @@ export function MapClickHandler({ enabled, onMapClick }: MapClickHandlerProps) {
 
     const canvas = map.getCanvas();
     const prevCursor = canvas.style.cursor;
-    canvas.style.cursor = "crosshair";
+    canvas.style.cursor = cursor;
 
     const handler = (e: MapLibreGL.MapMouseEvent) => {
       onMapClick({ lng: e.lngLat.lng, lat: e.lngLat.lat });
@@ -35,7 +36,7 @@ export function MapClickHandler({ enabled, onMapClick }: MapClickHandlerProps) {
       map.off("click", handler);
       canvas.style.cursor = prevCursor;
     };
-  }, [map, isLoaded, enabled, onMapClick]);
+  }, [map, isLoaded, enabled, onMapClick, cursor]);
 
   return null;
 }

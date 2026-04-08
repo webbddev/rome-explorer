@@ -55,6 +55,7 @@ export default function Home() {
   const [selectedSight, setSelectedSight] = useState<Sight | null>(null);
   const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
   const [selectedHome, setSelectedHome] = useState<typeof HOME_LOCATION | null>(null);
+  const [highlightedLocationId, setHighlightedLocationId] = useState<string | number | null>(null);
 
   const hasAnyPin = pinA !== null || pinB !== null;
   const straightLine = pinA && pinB ? haversineDistance(pinA, pinB) : 0;
@@ -85,6 +86,7 @@ export default function Home() {
       setSelectedSight(null);
       setSelectedShop(null);
       setSelectedHome(null);
+      setHighlightedLocationId(null);
 
       const mode = pinModeRef.current;
       if (mode === 'idle') return;
@@ -108,23 +110,14 @@ export default function Home() {
         essential: true,
       });
 
-      const isShop = typeof item.id === 'string' && item.id.startsWith('z');
-      const isHome = item.id === 'home';
-
-      if (isShop) {
-        setSelectedShop(item as Shop);
-        setSelectedSight(null);
-        setSelectedHome(null);
-      } else if (isHome) {
-        setSelectedShop(null);
-        setSelectedSight(null);
-        setSelectedHome(HOME_LOCATION);
-      } else {
-        setSelectedSight(item as Sight);
-        setSelectedShop(null);
-        setSelectedHome(null);
-      }
+      // We only fly to the location and close the search results.
+      // We explicitly DO NOT set the selected state here because the user
+      // only wants to see the description card when clicking the marker on the map.
       setPinMode('idle');
+      
+      // Temporary pulsating highlight
+      setHighlightedLocationId(item.id);
+      setTimeout(() => setHighlightedLocationId(null), 8000);
     },
     [setPinMode],
   );
@@ -162,8 +155,9 @@ export default function Home() {
           position='bottom-right'
         />
         <MapClickHandler
-          enabled={pinMode !== 'idle'}
+          enabled={true}
           onMapClick={handleMapClick}
+          cursor={pinMode === 'idle' ? 'inherit' : 'crosshair'}
         />
 
         {/* Route Polyline */}
@@ -269,8 +263,7 @@ export default function Home() {
             latitude={sight.coords[1]}
             onClick={(e) => {
 
-              // @ts-expect-error: MapLibre event type mismatch with React MouseEvent
-              e.originalEvent?.stopPropagation();
+              e.stopPropagation();
               setSelectedSight(sight);
               setSelectedShop(null);
               setSelectedHome(null);
@@ -283,11 +276,16 @@ export default function Home() {
             }}
           >
             <MarkerContent>
-              <MapMonumentIcon
-                type={sight.iconType}
-                name={sight.name}
-                isActive={selectedSight?.id === sight.id}
-              />
+              <div className='relative flex items-center justify-center'>
+                {highlightedLocationId === sight.id && (
+                  <div className='absolute size-12 rounded-full bg-blue-500/30 animate-ping pointer-events-none' />
+                )}
+                <MapMonumentIcon
+                  type={sight.iconType}
+                  name={sight.name}
+                  isActive={selectedSight?.id === sight.id}
+                />
+              </div>
             </MarkerContent>
           </MapMarker>
         ))}
@@ -300,8 +298,7 @@ export default function Home() {
             latitude={shop.coords[1]}
             onClick={(e) => {
 
-              // @ts-expect-error: MapLibre event type mismatch with React MouseEvent
-              e.originalEvent?.stopPropagation();
+              e.stopPropagation();
               setSelectedShop(shop);
               setSelectedSight(null);
               setSelectedHome(null);
@@ -317,6 +314,9 @@ export default function Home() {
               <div
                 className={`relative flex flex-col items-center group transition-all duration-300 ${selectedShop?.id === shop.id ? 'scale-110 z-50' : 'z-10'}`}
               >
+                {highlightedLocationId === shop.id && (
+                  <div className='absolute top-3.5 left-1/2 -translate-x-1/2 size-12 rounded-full bg-blue-500/30 animate-ping pointer-events-none' />
+                )}
                 {/* Shop Icon (Circular Blue for Shopping) */}
                 <div
                   className={`
@@ -357,8 +357,7 @@ export default function Home() {
           longitude={HOME_LOCATION.coords[0]}
           latitude={HOME_LOCATION.coords[1]}
           onClick={(e) => {
-            // @ts-expect-error: MapLibre event type mismatch with React MouseEvent
-            e.originalEvent?.stopPropagation();
+            e.stopPropagation();
             mapRef.current?.flyTo({
               center: HOME_LOCATION.coords,
               zoom: 16,
@@ -373,6 +372,9 @@ export default function Home() {
         >
           <MarkerContent>
             <div className='relative flex flex-col items-center group cursor-pointer transition-all duration-300'>
+              {highlightedLocationId === HOME_LOCATION.id && (
+                <div className='absolute top-4 left-1/2 -translate-x-1/2 size-14 rounded-full bg-rose-500/30 animate-ping pointer-events-none' />
+              )}
               <div className='bg-rose-600 p-2 rounded-full shadow-lg border-2 border-white group-hover:bg-rose-700 transition-colors'>
                 <HomeIcon className='size-3.5 text-white' />
               </div>
