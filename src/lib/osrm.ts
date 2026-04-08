@@ -17,7 +17,7 @@ export interface RouteData {
  *
  * We use 4.5 km/h as a balanced average for Rome tourism walking.
  */
-const WALKING_SPEED_MS = 4.5 / 3.6; // 1.25 m/s
+const WALKING_SPEED_MS = 4.5 / 3.6; // ≈ 1.25 m/s  (4.5 km/h)
 
 /**
  * Fetches a walking route from the public OSRM API.
