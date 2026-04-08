@@ -39,14 +39,15 @@ export async function getWalkingRoute(
 
   try {
     const response = await fetch(url);
+    let data;
     if (!response.ok) {
       // Fallback to demo server if OSM DE is down
       const fallbackUrl = `https://router.project-osrm.org/route/v1/foot/${coordinates}?overview=full&geometries=geojson&alternatives=3&continue_straight=false`;
       const fallbackResponse = await fetch(fallbackUrl);
       if (!fallbackResponse.ok) return null;
-      var data = await fallbackResponse.json();
+      data = await fallbackResponse.json();
     } else {
-      var data = await response.json();
+      data = await response.json();
     }
 
     if (data.code !== "Ok" || !data.routes?.length) {

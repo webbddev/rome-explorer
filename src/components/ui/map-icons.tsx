@@ -1,16 +1,12 @@
 import React from 'react';
 import {
   Landmark,
-  MountainSnow,
   Palette,
-  Cross,
-  Anchor,
   History,
   Building2,
   Church,
   TowerControl as Castle,
   Waves,
-  MapPin,
   Trees,
 } from 'lucide-react';
 

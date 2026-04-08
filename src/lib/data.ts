@@ -1,4 +1,28 @@
-export const SIGHTS = [
+export interface Sight {
+  id: number;
+  name: string;
+  coords: [number, number];
+  isFree?: boolean;
+  image: string;
+  description: string;
+  iconType: string;
+  tripadvisorRating?: number;
+  tripadvisorUrl?: string;
+}
+
+export interface Shop {
+  id: string;
+  name: string;
+  coords: [number, number];
+  description: string;
+  image?: string;
+  address?: string;
+  time?: string;
+}
+
+export type LocationItem = Sight | Shop | { id: string; name: string; coords: [number, number] };
+
+export const SIGHTS: Sight[] = [
   {
     id: 1,
     name: 'Colosseum',
@@ -155,7 +179,7 @@ export const SIGHTS = [
   },
 ];
 
-export const ALYA_SHOPPING = [
+export const ALYA_SHOPPING: Shop[] = [
   {
     id: 'z1',
     name: 'ZAlya Via del Corso',
