@@ -727,6 +727,12 @@ type MapControlsProps = {
   className?: string;
   /** Callback with user coordinates when located */
   onLocate?: (coords: { longitude: number; latitude: number }) => void;
+  /** Show drop pin button */
+  showDropPin?: boolean;
+  /** Whether drop pin mode is currently active */
+  dropPinActive?: boolean;
+  /** Callback when drop pin button is clicked */
+  onDropPinClick?: () => void;
 };
 
 const positionClasses = {
@@ -778,6 +784,9 @@ function MapControls({
   showLocate = false,
   show3D = false,
   showFullscreen = false,
+  showDropPin = false,
+  dropPinActive = false,
+  onDropPinClick,
   className,
   onLocate,
 }: MapControlsProps) {
@@ -850,6 +859,27 @@ function MapControls({
         className,
       )}
     >
+      {showDropPin && (
+        <ControlGroup>
+          <ControlButton onClick={() => onDropPinClick?.()} label="Toggle Drop Pin" disabled={undefined}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className={cn("size-4", dropPinActive ? "text-blue-600" : "")}
+            >
+              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+          </ControlButton>
+        </ControlGroup>
+      )}
       {showZoom && (
         <ControlGroup>
           <ControlButton onClick={handleZoomIn} label="Zoom in">
