@@ -23,7 +23,15 @@ import { RouteInfoContent } from '@/components/ui/route-info-content';
 import { LocationCards } from '@/components/ui/location-cards';
 import { SearchOverlay } from '@/components/ui/search-overlay';
 import { MapClickHandler } from '@/components/map-click-handler';
-import { ROME_CENTER, SIGHTS, ALYA_SHOPPING, HOME_LOCATION, type Sight, type Shop, type LocationItem } from '@/lib/data';
+import {
+  ROME_CENTER,
+  SIGHTS,
+  ALYA_SHOPPING,
+  HOME_LOCATION,
+  type Sight,
+  type Shop,
+  type LocationItem,
+} from '@/lib/data';
 import { haversineDistance } from '@/lib/geo';
 import { useGps } from '@/hooks/use-gps';
 import { useRouting } from '@/hooks/use-routing';
@@ -54,8 +62,12 @@ export default function Home() {
   // ── UI State ───────────────────────────────────────────────────────────
   const [selectedSight, setSelectedSight] = useState<Sight | null>(null);
   const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
-  const [selectedHome, setSelectedHome] = useState<typeof HOME_LOCATION | null>(null);
-  const [highlightedLocationId, setHighlightedLocationId] = useState<string | number | null>(null);
+  const [selectedHome, setSelectedHome] = useState<typeof HOME_LOCATION | null>(
+    null,
+  );
+  const [highlightedLocationId, setHighlightedLocationId] = useState<
+    string | number | null
+  >(null);
 
   const hasAnyPin = pinA !== null || pinB !== null;
   const straightLine = pinA && pinB ? haversineDistance(pinA, pinB) : 0;
@@ -86,7 +98,6 @@ export default function Home() {
       setSelectedSight(null);
       setSelectedShop(null);
       setSelectedHome(null);
-      setHighlightedLocationId(null);
 
       const mode = pinModeRef.current;
       if (mode === 'idle') return;
@@ -101,8 +112,14 @@ export default function Home() {
     [handleSetA, handleSetB, pinModeRef],
   );
 
+  const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+
   const handleSearchResultClick = useCallback(
     (item: LocationItem) => {
+      console.log('Highlighting location:', item.name, item.id);
+
       mapRef.current?.flyTo({
         center: item.coords,
         zoom: 16,
@@ -110,14 +127,18 @@ export default function Home() {
         essential: true,
       });
 
-      // We only fly to the location and close the search results.
-      // We explicitly DO NOT set the selected state here because the user
-      // only wants to see the description card when clicking the marker on the map.
       setPinMode('idle');
-      
-      // Temporary pulsating highlight
+
+      // Temporary pulsating highlight (lasts 4 seconds)
+      if (highlightTimeoutRef.current) {
+        clearTimeout(highlightTimeoutRef.current);
+      }
+
       setHighlightedLocationId(item.id);
-      setTimeout(() => setHighlightedLocationId(null), 8000);
+      highlightTimeoutRef.current = setTimeout(() => {
+        setHighlightedLocationId(null);
+        highlightTimeoutRef.current = null;
+      }, 5000);
     },
     [setPinMode],
   );
@@ -262,12 +283,12 @@ export default function Home() {
             longitude={sight.coords[0]}
             latitude={sight.coords[1]}
             onClick={(e) => {
-
               e.stopPropagation();
               setSelectedSight(sight);
               setSelectedShop(null);
               setSelectedHome(null);
               setPinMode('idle');
+              setHighlightedLocationId(null);
               mapRef.current?.flyTo({
                 center: sight.coords,
                 zoom: 16,
@@ -277,8 +298,8 @@ export default function Home() {
           >
             <MarkerContent>
               <div className='relative flex items-center justify-center'>
-                {highlightedLocationId === sight.id && (
-                  <div className='absolute size-12 rounded-full bg-blue-500/30 animate-ping pointer-events-none' />
+                {String(highlightedLocationId) === String(sight.id) && (
+                  <div className='absolute size-24 rounded-full bg-amber-400/60 animate-ping pointer-events-none z-0' />
                 )}
                 <MapMonumentIcon
                   type={sight.iconType}
@@ -297,12 +318,12 @@ export default function Home() {
             longitude={shop.coords[0]}
             latitude={shop.coords[1]}
             onClick={(e) => {
-
               e.stopPropagation();
               setSelectedShop(shop);
               setSelectedSight(null);
               setSelectedHome(null);
               setPinMode('idle');
+              setHighlightedLocationId(null);
               mapRef.current?.flyTo({
                 center: shop.coords,
                 zoom: 16,
@@ -314,8 +335,8 @@ export default function Home() {
               <div
                 className={`relative flex flex-col items-center group transition-all duration-300 ${selectedShop?.id === shop.id ? 'scale-110 z-50' : 'z-10'}`}
               >
-                {highlightedLocationId === shop.id && (
-                  <div className='absolute top-3.5 left-1/2 -translate-x-1/2 size-12 rounded-full bg-blue-500/30 animate-ping pointer-events-none' />
+                {String(highlightedLocationId) === String(shop.id) && (
+                  <div className='absolute top-3.5 left-1/2 -translate-x-1/2 size-24 rounded-full bg-amber-400/60 animate-ping pointer-events-none' />
                 )}
                 {/* Shop Icon (Circular Blue for Shopping) */}
                 <div
@@ -358,6 +379,7 @@ export default function Home() {
           latitude={HOME_LOCATION.coords[1]}
           onClick={(e) => {
             e.stopPropagation();
+            setHighlightedLocationId(null);
             mapRef.current?.flyTo({
               center: HOME_LOCATION.coords,
               zoom: 16,
@@ -372,8 +394,8 @@ export default function Home() {
         >
           <MarkerContent>
             <div className='relative flex flex-col items-center group cursor-pointer transition-all duration-300'>
-              {highlightedLocationId === HOME_LOCATION.id && (
-                <div className='absolute top-4 left-1/2 -translate-x-1/2 size-14 rounded-full bg-rose-500/30 animate-ping pointer-events-none' />
+              {String(highlightedLocationId) === String(HOME_LOCATION.id) && (
+                <div className='absolute top-4 left-1/2 -translate-x-1/2 size-28 rounded-full bg-amber-400/70 animate-ping pointer-events-none' />
               )}
               <div className='bg-rose-600 p-2 rounded-full shadow-lg border-2 border-white group-hover:bg-rose-700 transition-colors'>
                 <HomeIcon className='size-3.5 text-white' />

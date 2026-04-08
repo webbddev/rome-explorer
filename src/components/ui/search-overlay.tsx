@@ -47,21 +47,26 @@ export function SearchOverlay({
     <>
       <div className='absolute top-0 left-0 right-0 z-50 pointer-events-none p-4 pb-0'>
         <div className='max-w-xl mx-auto flex flex-col items-start gap-3'>
-          
           {/* Header Area: Restored simple style */}
-          <div className='flex items-center justify-between w-full'>
+          <div className='flex items-center justify-between w-full p-6'>
             <div className='flex flex-col'>
-              <h1 className='text-3xl font-black text-black/80 tracking-tighter italic drop-shadow-sm'>
-                Roma Explorer
+              <h1 className='text-4xl font-black tracking-tight text-[#3d2b1f]'>
+                Roma{' '}
+                <span className='font-serif italic font-medium text-[#0a73508e]'>
+                  Explorer
+                </span>
               </h1>
-              <span className='text-[9px] font-black text-slate-600/80 uppercase tracking-[0.3em] mt-0.5 ml-0.5'>
-                Donna Alevtonna edition
-              </span>
+              <div className='flex items-center gap-2 mt-1'>
+                <div className='h-0.5 w-4 bg-[#3d2b1f]' />
+                <span className='text-[11px] font-black text-[#1B3022]/80 uppercase tracking-[0.2em]'>
+                  Donna Alevtonna Edition
+                </span>
+              </div>
             </div>
-            <div className='px-4 py-1.5 bg-white/40 backdrop-blur-md rounded-full border border-white/40 shadow-sm'>
-              <span className='text-[10px] font-black text-slate-500 uppercase tracking-wider'>
+
+            <div className='px-3 py-1 bg-white/0 backdrop-blur-sm border border-white/40 rounded-full shadow-[0_2px_10px_-3px_rgba(0,0,0,0.07)] flex items-center gap-2'>
+              <span className='text-[10px] font-black text-slate-800 uppercase tracking-widest tabular-nums'>
                 {new Date().toLocaleDateString('en-US', {
-                  weekday: 'short',
                   month: 'short',
                   day: 'numeric',
                   year: 'numeric',
@@ -71,10 +76,12 @@ export function SearchOverlay({
           </div>
 
           {/* Search Wrapper: Stays LEFT on all screens */}
-          <div className={`pointer-events-auto relative z-30 transition-all duration-300 ease-in-out ${
-            searchOpen || searchQuery ? 'w-full' : 'w-11'
-          }`}>
-            <div 
+          <div
+            className={`pointer-events-auto relative z-30 transition-all duration-300 ease-in-out ${
+              searchOpen || searchQuery ? 'w-full' : 'w-11'
+            }`}
+          >
+            <div
               className={`
                 relative flex items-center bg-white shadow-xl border border-black/5 h-11 transition-all duration-300 
                 ${searchOpen || searchQuery ? 'px-4 gap-2.5 rounded-full' : 'px-0 justify-center rounded-full'}
@@ -86,15 +93,19 @@ export function SearchOverlay({
                 }
               }}
             >
-              <Search className={`size-6 shrink-0 transition-colors duration-300 ${searchOpen ? 'text-slate-400' : 'text-slate-500'}`} />
-              
+              <Search
+                className={`size-6 shrink-0 transition-colors duration-300 ${searchOpen ? 'text-slate-400' : 'text-slate-500'}`}
+              />
+
               <input
                 ref={searchInputRef}
                 type='text'
                 placeholder='Search sights...'
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                onBlur={() => { if (!searchQuery) setSearchOpen(false); }}
+                onBlur={() => {
+                  if (!searchQuery) setSearchOpen(false);
+                }}
                 className={`
                   bg-transparent text-lg font-medium text-slate-800 placeholder:text-slate-300 outline-none transition-all duration-300
                   ${searchOpen || searchQuery ? 'opacity-100 w-full ml-2' : 'opacity-0 w-0 pointer-events-none'}
@@ -129,28 +140,48 @@ export function SearchOverlay({
                       className='w-full flex items-center gap-4 px-6 py-4 hover:bg-slate-50 transition-colors text-left border-b border-slate-50 last:border-b-0'
                     >
                       <div className='shrink-0'>
-                        {typeof item.id === 'string' && item.id.startsWith('z') ? (
+                        {typeof item.id === 'string' &&
+                        item.id.startsWith('z') ? (
                           <div className='bg-blue-500 p-2.5 rounded-2xl'>
                             <ShoppingBag className='size-4.5 text-white' />
                           </div>
                         ) : item.id === 'home' ? (
                           <div className='bg-rose-600 p-2.5 rounded-2xl'>
-                            <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='3.5' className='size-4.5 text-white'>
-                              <polyline points='5 12 3 12 12 3 21 12 19 12' /><path d='M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7' /><path d='M9 21v-6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v6' />
+                            <svg
+                              viewBox='0 0 24 24'
+                              fill='none'
+                              stroke='currentColor'
+                              strokeWidth='3.5'
+                              className='size-4.5 text-white'
+                            >
+                              <polyline points='5 12 3 12 12 3 21 12 19 12' />
+                              <path d='M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7' />
+                              <path d='M9 21v-6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v6' />
                             </svg>
                           </div>
                         ) : (
                           <div className='bg-slate-900 p-2.5 rounded-2xl'>
-                            <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2.5' className='size-4.5 text-white'>
-                              <path d='M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z' /><circle cx='12' cy='10' r='3' />
+                            <svg
+                              viewBox='0 0 24 24'
+                              fill='none'
+                              stroke='currentColor'
+                              strokeWidth='2.5'
+                              className='size-4.5 text-white'
+                            >
+                              <path d='M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z' />
+                              <circle cx='12' cy='10' r='3' />
                             </svg>
                           </div>
                         )}
                       </div>
                       <div className='flex-1 min-w-0'>
-                        <div className='font-bold text-base text-slate-800 truncate'>{item.name}</div>
+                        <div className='font-bold text-base text-slate-800 truncate'>
+                          {item.name}
+                        </div>
                         {'address' in item && item.address && (
-                          <div className='text-xs text-slate-400 font-medium truncate mt-0.5'>{item.address}</div>
+                          <div className='text-xs text-slate-400 font-medium truncate mt-0.5'>
+                            {item.address}
+                          </div>
                         )}
                       </div>
                     </button>
@@ -169,6 +200,5 @@ export function SearchOverlay({
         />
       )}
     </>
-
   );
 }
