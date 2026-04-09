@@ -45,26 +45,25 @@ export function SearchOverlay({
 
   return (
     <>
-      <div className='absolute top-0 left-0 right-0 z-50 pointer-events-none p-4 pb-0'>
-        <div className='max-w-xl mx-auto flex flex-col items-start gap-3'>
-          {/* Header Area: Restored simple style */}
-          <div className='flex items-center justify-between w-full p-6'>
-            <div className='flex flex-col'>
-              <h1 className='text-4xl font-black tracking-tight text-[#3d2b1f]'>
+      <div className='absolute top-0 left-0 right-0 z-50 pointer-events-none p-4 md:p-6'>
+        <div className='max-w-xl mx-auto flex flex-col-reverse md:flex-col items-center md:items-start gap-4 transition-all duration-300'>
+          {/* Header Area */}
+          <div className={`flex flex-row items-center justify-between w-full px-2 transition-opacity duration-300 ${searchOpen || searchQuery ? 'opacity-0 md:opacity-100 pointer-events-none md:pointer-events-auto' : 'opacity-100'}`}>
+            <div className='flex flex-col items-start'>
+              <h1 className='text-3xl font-black tracking-tight text-[#3d2b1f]'>
                 Roma{' '}
                 <span className='font-serif italic font-medium text-[#0a73508e]'>
                   Explorer
                 </span>
               </h1>
-              <div className='flex items-center gap-2 mt-1'>
-                <div className='h-0.5 w-4 bg-[#3d2b1f]' />
-                <span className='text-[11px] font-black text-[#1B3022]/80 uppercase tracking-[0.2em]'>
+              <div className='flex items-center gap-2 mt-0.5'>
+                <span className='text-[9px] font-black text-[#1B3022]/70 uppercase tracking-[0.15em]'>
                   Donna Alevtonna Edition
                 </span>
               </div>
             </div>
 
-            <div className='px-3 py-1 bg-white/0 backdrop-blur-sm border border-white/40 rounded-full shadow-[0_2px_10px_-3px_rgba(0,0,0,0.07)] flex items-center gap-2'>
+            <div className='px-3.5 py-1.5 bg-white/40 backdrop-blur-md border border-white/40 rounded-full shadow-sm flex items-center gap-2'>
               <span className='text-[10px] font-black text-slate-800 uppercase tracking-widest tabular-nums'>
                 {new Date().toLocaleDateString('en-US', {
                   month: 'short',
@@ -75,44 +74,41 @@ export function SearchOverlay({
             </div>
           </div>
 
-          {/* Search Wrapper: Stays LEFT on all screens */}
           <div
-            className={`pointer-events-auto relative z-30 transition-all duration-300 ease-in-out ${
-              searchOpen || searchQuery ? 'w-full' : 'w-11'
-            }`}
+            className={`
+              pointer-events-auto transition-all duration-300 ease-in-out z-[60]
+              ${searchOpen || searchQuery 
+                ? 'fixed md:relative inset-x-4 md:inset-x-0 top-4 md:top-auto w-auto md:w-full h-11 md:h-11 bg-white/95 backdrop-blur-xl md:bg-white md:backdrop-blur-none border md:border border-black/5 rounded-full px-4 shadow-2xl md:shadow-none' 
+                : 'relative w-11 h-11 bg-white rounded-full shadow-lg border border-black/5 flex items-center justify-center'
+              }
+            `}
+            onClick={() => {
+              if (!searchOpen) {
+                setSearchOpen(true);
+                setTimeout(() => searchInputRef.current?.focus(), 150);
+              }
+            }}
           >
-            <div
-              className={`
-                relative flex items-center bg-white shadow-xl border border-black/5 h-11 transition-all duration-300 
-                ${searchOpen || searchQuery ? 'px-4 gap-2.5 rounded-full' : 'px-0 justify-center rounded-full'}
-              `}
-              onClick={() => {
-                if (!searchOpen) {
-                  setSearchOpen(true);
-                  setTimeout(() => searchInputRef.current?.focus(), 150);
-                }
-              }}
-            >
+            <div className='flex items-center justify-center w-full h-full gap-3'>
               <Search
                 className={`size-6 shrink-0 transition-colors duration-300 ${searchOpen ? 'text-slate-400' : 'text-slate-500'}`}
               />
 
-              <input
-                ref={searchInputRef}
-                type='text'
-                placeholder='Search sights...'
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onBlur={() => {
-                  if (!searchQuery) setSearchOpen(false);
-                }}
-                className={`
-                  bg-transparent text-lg font-medium text-slate-800 placeholder:text-slate-300 outline-none transition-all duration-300
-                  ${searchOpen || searchQuery ? 'opacity-100 w-full ml-2' : 'opacity-0 w-0 pointer-events-none'}
-                `}
-              />
-
               {(searchOpen || searchQuery) && (
+                <input
+                  ref={searchInputRef}
+                  type='text'
+                  placeholder='Search sights...'
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onBlur={() => {
+                    if (!searchQuery) setSearchOpen(false);
+                  }}
+                  className='bg-transparent text-lg font-medium text-slate-800 placeholder:text-slate-400 outline-none w-full animate-in fade-in duration-300'
+                />
+              )}
+
+              {(searchOpen || searchQuery) && searchQuery && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -126,7 +122,7 @@ export function SearchOverlay({
               )}
             </div>
 
-            {/* Results Dropdown: Restored simple style */}
+            {/* Results Dropdown */}
             {searchOpen && searchResults.length > 0 && (
               <div className='absolute top-full left-0 right-0 mt-3 bg-white/98 backdrop-blur-xl rounded-[2rem] shadow-2xl border border-black/5 overflow-hidden animate-in fade-in zoom-in-95 slide-in-from-top-4 duration-300 z-50'>
                 <div className='max-h-[60vh] overflow-y-auto py-3 overscroll-contain'>
