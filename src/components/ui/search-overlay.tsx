@@ -46,7 +46,7 @@ export function SearchOverlay({
   return (
     <>
       <div className='absolute top-0 left-0 right-0 z-50 pointer-events-none p-4 md:p-6'>
-        <div className='max-w-xl mx-auto flex flex-col-reverse md:flex-col items-center md:items-start gap-4 transition-all duration-300'>
+        <div className='max-w-xl mx-auto flex flex-col items-center md:items-start gap-4 transition-all duration-300'>
           {/* Header Area */}
           <div className={`flex flex-row items-center justify-between w-full px-2 transition-opacity duration-300 ${searchOpen || searchQuery ? 'opacity-0 md:opacity-100 pointer-events-none md:pointer-events-auto' : 'opacity-100'}`}>
             <div className='flex flex-col items-start'>
@@ -78,8 +78,8 @@ export function SearchOverlay({
             className={`
               pointer-events-auto transition-all duration-300 ease-in-out z-[60]
               ${searchOpen || searchQuery 
-                ? 'fixed md:relative inset-x-4 md:inset-x-0 top-4 md:top-auto w-auto md:w-full h-11 md:h-11 bg-white/95 backdrop-blur-xl md:bg-white md:backdrop-blur-none border md:border border-black/5 rounded-full px-4 shadow-2xl md:shadow-none' 
-                : 'relative w-11 h-11 bg-white rounded-full shadow-lg border border-black/5 flex items-center justify-center'
+                ? 'relative w-full h-11 md:h-11 bg-white/95 backdrop-blur-xl md:bg-white md:backdrop-blur-none border md:border border-black/5 rounded-full px-4 shadow-2xl md:shadow-none' 
+                : 'relative w-11 h-11 bg-white rounded-full shadow-lg border border-black/5 flex items-center justify-center cursor-pointer'
               }
             `}
             onClick={() => {

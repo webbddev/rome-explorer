@@ -1,7 +1,8 @@
+import { useState, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Star, X, MapPin, Footprints, Locate, ShoppingBag, ExternalLink, Home as HomeIcon } from 'lucide-react';
+import { Star, X, MapPin, Footprints, Locate, ShoppingBag, ExternalLink, Home as HomeIcon, Sparkles, Loader2 } from 'lucide-react';
 import { formatDistance, haversineDistance } from '@/lib/geo';
 import { HOME_LOCATION, type Sight, type Shop } from '@/lib/data';
 
@@ -28,6 +29,64 @@ export function LocationCards({
   handleStartHere,
   handleWalkTo
 }: LocationCardsProps) {
+  const [funFacts, setFunFacts] = useState<Record<number | string, string>>({});
+  const [isGenerating, setIsGenerating] = useState<number | string | null>(null);
+
+  const handleGenerateFact = async (locationName: string, id: number | string) => {
+    if (isGenerating) return;
+    
+    setIsGenerating(id);
+    try {
+      const response = await fetch('/api/fun-fact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ locationName }),
+      });
+
+      if (!response.ok) throw new Error('Archives busy');
+
+      const reader = response.body?.getReader();
+      if (!reader) return;
+
+      setFunFacts(prev => ({ ...prev, [id]: '' }));
+
+      const decoder = new TextDecoder();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        const chunk = decoder.decode(value, { stream: true });
+        
+        // Parse Standard OpenAI SSE format: data: {"choices": [{"delta": {"content": "..."}}]}
+        const lines = chunk.split('\n');
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const dataStr = line.slice(6).trim();
+            if (dataStr === '[DONE]') break;
+            
+            try {
+              const data = JSON.parse(dataStr);
+              const content = data.choices[0]?.delta?.content || '';
+              if (content) {
+                setFunFacts(prev => ({
+                  ...prev,
+                  [id]: (prev[id] || '') + content
+                }));
+              }
+            } catch (e) {
+              // Ignore partial JSON chunks
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setFunFacts(prev => ({ ...prev, [id]: 'The archives are temporarily busy.' }));
+    } finally {
+      setIsGenerating(null);
+    }
+  };
+
   return (
     <>
           {/* Selected Sight Card */}
@@ -105,6 +164,43 @@ export function LocationCards({
                 <p className='text-slate-600 text-[13px] leading-relaxed mb-4 italic font-medium'>
                   &quot;{selectedSight.description}&quot;
                 </p>
+
+                {/* AI Fun Fact Section */}
+                <div className='mb-6 p-4 rounded-2xl bg-slate-50 border border-slate-100/50 group/fact relative overflow-hidden'>
+                  <div className='flex items-center justify-between mb-2'>
+                    <div className='flex items-center gap-2'>
+                      <Sparkles className='size-3.5 text-amber-500 animate-pulse' />
+                      <span className='text-[10px] font-black text-slate-400 uppercase tracking-widest'>
+                        Интересный факт
+                      </span>
+                    </div>
+                    {!funFacts[selectedSight.id] && !isGenerating && (
+                      <button
+                        onClick={() => handleGenerateFact(selectedSight.name, selectedSight.id)}
+                        className='text-[10px] font-bold text-blue-600 hover:text-blue-700 transition-colors flex items-center gap-1'
+                      >
+                        Узнать <span className='hidden sm:inline'>факт</span>
+                      </button>
+                    )}
+                  </div>
+                  
+                  {isGenerating === selectedSight.id ? (
+                    <div className='flex items-center gap-2 py-1'>
+                      <Loader2 className='size-3 animate-spin text-slate-400' />
+                      <span className='text-xs text-slate-400 font-medium animate-pulse'>
+                        Ищем в архивах...
+                      </span>
+                    </div>
+                  ) : funFacts[selectedSight.id] ? (
+                    <p className='text-[12px] text-slate-700 font-serif italic leading-relaxed animate-in fade-in slide-in-from-left-2 duration-700'>
+                      &quot;{funFacts[selectedSight.id]}&quot;
+                    </p>
+                  ) : (
+                    <p className='text-[11px] text-slate-300 font-medium italic'>
+                      Нажмите, чтобы раскрыть тайную историю этого места...
+                    </p>
+                  )}
+                </div>
 
                 {/* TripAdvisor Link */}
                 {selectedSight.tripadvisorUrl && (

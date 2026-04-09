@@ -505,7 +505,7 @@ export default function Home() {
             className='flex items-center gap-1.5 px-4 py-2.5 md:px-3 md:py-2 rounded-full text-[11px] font-bold bg-white/95 border border-red-200 text-red-500 shadow-lg hover:bg-red-50 transition-all animate-in fade-in zoom-in-95 duration-200 whitespace-nowrap'
           >
             <X className='size-3.5' />
-            Clear
+            Reset
           </button>
         )}
       </div>
@@ -546,6 +546,16 @@ export default function Home() {
             {isLocating ? <Loader2 className='size-3.5 animate-spin' /> : <Navigation2 className='size-3.5' />}
             Locate
           </button>
+
+          {hasAnyPin && (
+            <button
+              onClick={handleClearRoute}
+              className='flex items-center gap-1.5 px-4 py-2.5 rounded-full text-[11px] font-bold bg-rose-500 text-white shadow-lg shadow-rose-500/25 animate-in fade-in zoom-in-95 duration-200 whitespace-nowrap'
+            >
+              <X className='size-3.5' />
+              Reset
+            </button>
+          )}
         </div>
 
         {/* Mobile Bottom Sheet (route info, below md) */}
